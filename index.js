@@ -28,9 +28,9 @@ async function run() {
 
     const usersCollection = client.db("summerQuestDB").collection("users");
     const classCollection = client.db("summerQuestDB").collection("class");
-    const instructorsCollection = client
+    const selectedClassesCollection = client
       .db("summerQuestDB")
-      .collection("instructors");
+      .collection("selectedClasses");
 
     //*save userInfo in the database if it is new only.
     app.post("/users", async (req, res) => {
@@ -46,6 +46,14 @@ async function run() {
       res.send(result);
     });
 
+    //* classes collection added by student
+    app.post("/selectedClasses", async (req, res) => {
+      const item = req.body;
+      console.log(item);
+      const result = await selectedClassesCollection.insertOne(item);
+      res.send(result);
+    });
+
     //* get all users
     app.get("/users", async (req, res) => {
       const result = await usersCollection.find().toArray();
@@ -55,6 +63,19 @@ async function run() {
     //* get all classes
     app.get("/classes", async (req, res) => {
       const result = await classCollection.find().toArray();
+      res.send(result);
+    });
+
+    //* get classes selected by a student
+    app.get("/studentClasses", async (req, res) => {
+      const result = await selectedClassesCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.delete("/studentClasses/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await selectedClassesCollection.deleteOne(query);
       res.send(result);
     });
 
