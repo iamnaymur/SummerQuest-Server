@@ -121,6 +121,31 @@ async function run() {
       res.send(result);
     });
 
+    //*3 feedback
+
+    app.patch("/class/feedback/:id", async (req, res) => {
+      const id = req.params.id;
+      const feedback = req.body.feedback;
+      // console.log(feedback)
+      const query = { _id: new ObjectId(id) };
+      const addFeedback = {
+        $set: {
+          feedback: feedback,
+        },
+      };
+
+      const result = await classCollection.updateOne(query, addFeedback);
+      res.send(result);
+    });
+
+    //* get instructors only
+
+    app.get("/instructors", async (req, res) => {
+      const query = { role: "instructor" };
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
+
     //* get user role api
     app.get("/users/:email", async (req, res) => {
       const email = req.params.email;
@@ -157,10 +182,7 @@ async function run() {
 
     //~ instructors route
 
-    app.get("/instructors", async (req, res) => {
-      const result = await instructorsCollection.find().toArray();
-      res.send(result);
-    });
+   
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
