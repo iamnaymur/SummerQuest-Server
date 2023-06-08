@@ -46,12 +46,44 @@ async function run() {
       res.send(result);
     });
 
+    //* get all users
+    app.get("/users", async (req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    });
+
     //!admin route
     app.get("/users/admin/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
       const user = await usersCollection.findOne(filter);
       const result = { admin: user?.role === "admin" };
+      res.send(result);
+    });
+
+    //*admin changes user role
+    //admin role api
+    app.patch("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updatedRole = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await usersCollection.updateOne(query, updatedRole);
+      res.send(result);
+    });
+    //instructor role api
+    app.patch("/users/instructor/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updatedRole = {
+        $set: {
+          role: "instructor",
+        },
+      };
+      const result = await usersCollection.updateOne(query, updatedRole);
       res.send(result);
     });
 
