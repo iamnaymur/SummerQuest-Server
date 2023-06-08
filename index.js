@@ -146,6 +146,13 @@ async function run() {
       res.send(result);
     });
 
+    //* get approvedClasses only
+    app.get("/approvedClasses", async (req, res) => {
+      const query = { status: "approved" };
+      const result = await classCollection.find(query).toArray();
+      res.send(result);
+    });
+
     //* get user role api
     app.get("/users/:email", async (req, res) => {
       const email = req.params.email;
@@ -181,8 +188,6 @@ async function run() {
     // });
 
     //~ instructors route
-
-   
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
