@@ -52,6 +52,12 @@ async function run() {
       res.send(result);
     });
 
+    //* get all classes
+    app.get("/classes", async (req, res) => {
+      const result = await classCollection.find().toArray();
+      res.send(result);
+    });
+
     //!admin route
     app.get("/users/admin/:email", async (req, res) => {
       const email = req.params.email;
@@ -87,6 +93,34 @@ async function run() {
       res.send(result);
     });
 
+    //*handle status change
+    //*1
+    app.patch("/class/approved/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updateStatus = {
+        $set: {
+          status: "approved",
+        },
+      };
+      const result = await classCollection.updateOne(query, updateStatus);
+      res.send(result);
+    });
+
+    //*2
+
+    app.patch("/class/denied/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const updateStatus = {
+        $set: {
+          status: "denied",
+        },
+      };
+      const result = await classCollection.updateOne(query, updateStatus);
+      res.send(result);
+    });
+
     //* get user role api
     app.get("/users/:email", async (req, res) => {
       const email = req.params.email;
@@ -107,19 +141,19 @@ async function run() {
       res.send(result);
     });
 
-    //* class status update
-    app.patch("/class/status/:id", async (req, res) => {
-      const id = req.params.id;
-      const status = req.body.status;
-      const query = { _id: new ObjectId(id) };
-      const updateStatus = {
-        $set: {
-          status: status,
-        },
-      };
-      const update = await classCollection.updateOne(query, updateStatus);
-      res.send(update);
-    });
+    // //* class status update
+    // app.patch("/class/status/:id", async (req, res) => {
+    //   const id = req.params.id;
+    //   const status = req.body.status;
+    //   const query = { _id: new ObjectId(id) };
+    //   const updateStatus = {
+    //     $set: {
+    //       status: status,
+    //     },
+    //   };
+    //   const update = await classCollection.updateOne(query, updateStatus);
+    //   res.send(update);
+    // });
 
     //~ instructors route
 
