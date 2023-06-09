@@ -4,6 +4,7 @@ const app = express();
 // const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const port = process.env.PORT || 5000;
+const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
 
 //middlewares
 app.use(cors());
@@ -28,6 +29,9 @@ async function run() {
 
     const usersCollection = client.db("summerQuestDB").collection("users");
     const classCollection = client.db("summerQuestDB").collection("class");
+    const paymentsCollection = client
+      .db("summerQuestDB")
+      .collection("payments");
     const selectedClassesCollection = client
       .db("summerQuestDB")
       .collection("selectedClasses");
@@ -191,6 +195,29 @@ async function run() {
     app.post("/classes", async (req, res) => {
       const newClass = req.body;
       const result = await classCollection.insertOne(newClass);
+      res.send(result);
+    });
+
+    //* create payment intent
+    app.post("/create-payment-intent", async (req, res) => {
+      const { price } = req.body;
+      const amount = parseFloat(price) * 100;
+      if (!price) return;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+
+      res.send({ clientSecret: paymentIntent.client_secret });
+    });
+
+    //* get single class data for payment
+
+    app.get("/classData/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await selectedClassesCollection.findOne(filter);
       res.send(result);
     });
 
