@@ -212,6 +212,22 @@ async function run() {
       res.send({ clientSecret: paymentIntent.client_secret });
     });
 
+    //* save payment to database
+     app.post("/bookings", async (req, res) => {
+      try {
+        const payment = req.body;
+        const insertResult = await paymentsCollection.insertOne(payment);
+        const classId = req.body.classId;
+        const query = { classId: classId };
+        await selectedClassesCollection.deleteOne(query);
+
+        res.status(201).send(insertResult);
+      } catch (error) {
+        console.error("An error occurred:", error);
+        res.status(500).send("Internal Server Error");
+      }
+    });
+
     //* get single class data for payment
 
     app.get("/classData/:id", async (req, res) => {
