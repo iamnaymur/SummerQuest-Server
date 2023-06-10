@@ -65,8 +65,10 @@ async function run() {
     });
 
     //* get all classes
-    app.get("/classes", async (req, res) => {
-      const result = await classCollection.find().toArray();
+    app.get("/classes/:email", async (req, res) => {
+      const email=req.params.email;
+      const query= {email: email}
+      const result = await classCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -213,7 +215,7 @@ async function run() {
     });
 
     //* save payment to database
-     app.post("/bookings", async (req, res) => {
+    app.post("/bookings", async (req, res) => {
       try {
         const payment = req.body;
         const insertResult = await paymentsCollection.insertOne(payment);
@@ -227,6 +229,18 @@ async function run() {
         res.status(500).send("Internal Server Error");
       }
     });
+
+    //* api for enrolled classes
+    app.get("/bookedClasses", async (req, res) => {
+      const result = await paymentsCollection.find().toArray();
+      res.send(result);
+    });
+
+    //!payment history descending
+    app.get('/paymentHistory', async (req, res) => { 
+      const result= await paymentsCollection.find().sort({data: 1}).toArray()
+      res.send(result)
+    })
 
     //* get single class data for payment
 
