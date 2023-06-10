@@ -64,11 +64,17 @@ async function run() {
       res.send(result);
     });
 
-    //* get all classes
+    //* get classes for specific instructor
     app.get("/classes/:email", async (req, res) => {
-      const email=req.params.email;
-      const query= {email: email}
+      const email = req.params.email;
+      const query = { email: email };
       const result = await classCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    //* get all classes for admin manageClasses
+    app.get("/classes", async (req, res) => {
+      const result = await classCollection.find().toArray();
       res.send(result);
     });
 
@@ -237,10 +243,13 @@ async function run() {
     });
 
     //!payment history descending
-    app.get('/paymentHistory', async (req, res) => { 
-      const result= await paymentsCollection.find().sort({data: 1}).toArray()
-      res.send(result)
-    })
+    app.get("/paymentHistory", async (req, res) => {
+      const result = await paymentsCollection
+        .find()
+        .sort({ data: 1 })
+        .toArray();
+      res.send(result);
+    });
 
     //* get single class data for payment
 
