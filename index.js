@@ -240,6 +240,16 @@ async function run() {
         };
         await classCollection.updateOne(availableSeat, seatCount);
 
+        //!Initially it will be zero. If any student has successfully booked the Class, show the total number of students.
+
+        const enrolledStudent = { _id: new ObjectId(classId) };
+        const classUpdate = {
+          $inc: {
+            enrolledStudents: 1,
+          },
+        };
+        await classCollection.updateOne(enrolledStudent, classUpdate);
+
         res.status(201).send(insertResult);
       } catch (error) {
         console.error("An error occurred:", error);
@@ -267,7 +277,7 @@ async function run() {
 
     //! enrolled students count for instructor my classes page
 
-    // app.get()
+   
 
     //* get single class data for payment
 
