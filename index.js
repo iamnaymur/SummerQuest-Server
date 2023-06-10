@@ -221,6 +221,7 @@ async function run() {
     });
 
     //* save payment to database
+   
     app.post("/bookings", async (req, res) => {
       try {
         const payment = req.body;
@@ -228,6 +229,16 @@ async function run() {
         const classId = req.body.classId;
         const query = { classId: classId };
         await selectedClassesCollection.deleteOne(query);
+
+        //! the Available seats for the particular Class will be reduced by 1.
+        const availableSeat = { _id: new ObjectId(classId) };
+        const classData = await classCollection.findOne(availableSeat);
+        const seatCount = {
+          $set: {
+            seats: classData.seats - 1,
+          },
+        };
+        await classCollection.updateOne(availableSeat, seatCount);
 
         res.status(201).send(insertResult);
       } catch (error) {
@@ -242,14 +253,18 @@ async function run() {
       res.send(result);
     });
 
-    //!payment history descending
+    //*payment history descending
     app.get("/paymentHistory", async (req, res) => {
       const result = await paymentsCollection
         .find()
-        .sort({ data: 1 })
+        .sort({ date: -1 })
         .toArray();
       res.send(result);
     });
+
+    //! enrolled students count for instructor my classes page
+
+    // app.get()
 
     //* get single class data for payment
 
