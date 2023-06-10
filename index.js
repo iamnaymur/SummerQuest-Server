@@ -221,7 +221,7 @@ async function run() {
     });
 
     //* save payment to database
-   
+
     app.post("/bookings", async (req, res) => {
       try {
         const payment = req.body;
@@ -247,9 +247,12 @@ async function run() {
       }
     });
 
-    //* api for enrolled classes
-    app.get("/bookedClasses", async (req, res) => {
-      const result = await paymentsCollection.find().toArray();
+    //* api for enrolled classes for specific user after payment
+    app.get("/bookedClasses/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+
+      const result = await paymentsCollection.find(query).toArray();
       res.send(result);
     });
 
@@ -275,19 +278,7 @@ async function run() {
       res.send(result);
     });
 
-    // //* class status update
-    // app.patch("/class/status/:id", async (req, res) => {
-    //   const id = req.params.id;
-    //   const status = req.body.status;
-    //   const query = { _id: new ObjectId(id) };
-    //   const updateStatus = {
-    //     $set: {
-    //       status: status,
-    //     },
-    //   };
-    //   const update = await classCollection.updateOne(query, updateStatus);
-    //   res.send(update);
-    // });
+    //*
 
     //~ instructors route
 
