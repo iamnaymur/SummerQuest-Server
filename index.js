@@ -179,6 +179,16 @@ async function run() {
       res.send(result);
     });
 
+    //!!!popular class section
+
+    app.get("/popularClasses", async (req, res) => {
+      const result = await classCollection
+        .find()
+        .sort({ enrolledStudents: -1 })
+        .toArray();
+      res.send(result);
+    });
+
     //* get approvedClasses only
     app.get("/approvedClasses", async (req, res) => {
       const query = { status: "approved" };
@@ -274,10 +284,6 @@ async function run() {
         .toArray();
       res.send(result);
     });
-
-    //! enrolled students count for instructor my classes page
-
-   
 
     //* get single class data for payment
 
